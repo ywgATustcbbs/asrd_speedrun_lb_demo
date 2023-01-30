@@ -27,7 +27,7 @@ int main() {
 	
 	//now comes the Identification string part. not much work to do except show messages to user
 	std::string steamID = "<SteamUserID:xxxxxxxxx>"; // this is the runner's id
-	std::string game_record_unverified = "<RecordTime><GameDetails>";//this is actually the info submitted to lb
+	std::string game_record_unverified = "<RecordTime><GameDetails><LeaderboardNameOrIdentifier>";//this is actually the info submitted to lb
 	std::cout << "Game Record Submitted to lb after each match:" << std::endl << "\t" << game_record_unverified << std::endl << std::endl;
 	steamID += game_record_unverified;//combine id and record for sha256
 	std::vector<unsigned char> hash(picosha2::k_digest_size);
@@ -76,7 +76,7 @@ int main() {
 	std::string steamID_record_owner = "<SteamUserID:xxxxxxxxx>";
 	std::string steamID_record_thief = "<SteamUserID:yyyyyyyyy>";
 	//2.extract record and sha256 strings. here i assume it is extracted and stored in tmp_record and tempSHA256
-	std::string tmp_record = "<RecordTime><GameDetails>";
+	std::string tmp_record = "<RecordTime><GameDetails><LeaderboardNameOrIdentifier>";
 	//3. verify the sha256
 	steamID_record_owner += tmp_record;
 	steamID_record_thief += tmp_record;
@@ -90,11 +90,13 @@ int main() {
 	std::cout << "SHA256 stored in verified string:\t" << tempSHA256 << std::endl;
 	std::cout << "SHA256 using owner's steamID:\t" << tempSHA256_owner << std::endl;
 	std::cout << "SHA256 using thief's steamID:\t" << tempSHA256_thief << std::endl << std::endl;
+	//4. override leaderboard
+	// SteamAPICall_t UploadLeaderboardScore( SteamLeaderboard_t hSteamLeaderboard, ELeaderboardUploadScoreMethod eLeaderboardUploadScoreMethod, int32 nScore, const int32 *pScoreDetails, int cScoreDetailsCount );
+	// by specifying eLeaderboardUploadScoreMethod = k_ELeaderboardUploadScoreMethodForceUpdate
+	// the record could be manually overrided.
+	// considering we have two steps of verification, this could prevent most of the users to modify as they wish. but cheaters with source code modified could by pass this verification. anyway, without this, they can also use this function to override record.
+	// to override a record, the hSteamLeaderboard must be specified, we can use <LeaderboardNameOrIdentifier> in the string to get it.
 
-
-
-
-	
 
 	return 0;
 }
